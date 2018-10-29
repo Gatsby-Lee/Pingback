@@ -14,9 +14,11 @@ from pbpy.applogic import PingbackApp
 # called `app` in `main.py`.
 app = Flask(__name__)
 
-REDIS_HOST = os.environ.get('REDISHOST', 'localhost')
-REDIS_PORT = int(os.environ.get('REDISPORT', 6379))
-REDIS_CLIENT = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
+REDIS_CLIENT = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT,
+                                 password=REDIS_PASSWORD)
 
 RESPONSE_HEADER = {"content-type": "application/json; charset=utf-8"}
 
@@ -37,28 +39,31 @@ def pingback():
     http://your-server.com/pingscript?taskId=$task_id&postId=$post_id
     """
 
-    task_id = None
     try:
-        task_id = request.args['taskId']
-    except Exception:
-        logging.warn('taskId param is NOT provided.')
-        return ('[400, ["FAIL", "taskId param is required."]]', 400, RESPONSE_HEADER)
+        pingback_src = request.path[1:].replace('-', '_')
+        task_id = None
+        try:
+            task_id = request.args['taskId']
+        except KeyError:
+            logging.warn('taskId param is NOT provided. pingback_src=%s', pingback_src)
+            return ('[400, ["FAIL", "taskId param is required."]]', 400, RESPONSE_HEADER)
 
-    post_id = '-1'
-    try:
-        post_id = request.args['postId']
-    except Exception:
-        pass
+        post_id = '-1'
+        try:
+            post_id = request.args['postId']
+        except KeyError:
+            pass
 
-    try:
-        PingbackApp.add_pingback(REDIS_CLIENT, task_id, post_id)
-        b = '[200, ["OK", ["%s", "%s"]]]' % (task_id, post_id)
-        return (b, 200, RESPONSE_HEADER)
-    except IntegrityError:
-        logging.warn('Duplicated entry exists: taskId=%s, postId=%s', task_id, post_id)
-        return ('[409, ["FAIL", "Duplicated Entry"]]', 409, RESPONSE_HEADER)
+        try:
+            PingbackApp.add_pingback(REDIS_CLIENT, pingback_src, (task_id, post_id))
+            b = '[200, ["OK", ["%s", "%s"]]]' % (task_id, post_id)
+            return (b, 200, RESPONSE_HEADER)
+        except IntegrityError:
+            logging.warn('Duplicated entry exists: pingback_src=%s,taskId=%s,postId=%s',
+                         pingback_src, task_id, post_id)
+            return ('[409, ["FAIL", "Duplicated Entry"]]', 409, RESPONSE_HEADER)
     except Exception as e:
-        logging.error(e)
+        logging.exception(e)
         return ('[500, ["FAIL", "Server Error"]]', 500, RESPONSE_HEADER)
 
 
