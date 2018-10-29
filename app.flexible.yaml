@@ -1,0 +1,16 @@
+service: pingback
+env: flex
+runtime: python
+entrypoint: gunicorn -b :$PORT main:app
+env_variables:
+  REDISHOST: 10.0.0.3
+  REDISPORT: 6379
+# update with Redis instance network name
+network:
+  name: default
+automatic_scaling:
+  max_num_instances: 1
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10

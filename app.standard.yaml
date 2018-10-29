@@ -1,0 +1,2 @@
+service: pingback
+runtime: python37
