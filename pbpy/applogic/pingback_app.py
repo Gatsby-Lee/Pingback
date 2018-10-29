@@ -33,10 +33,11 @@ class PingbackApp(object):
         #   NX - Don't update already existing elements. Always add new elements.
         sortedset_score = int(time.time())
         # @note: To process pingback task in order of arrival, `SortedSet` is used.
-        #       If this use case is unncessary, it's good to change to `Set`
-        # redis-py 2.10.6 doesn't support `nx` option in zadd yet.
+        #  If this use case is unncessary, it's good to change to `Set`
+        # @note: redis-py 2.10.6 doesn't support `nx` option in zadd yet.
+        #   https://github.com/andymccurdy/redis-py/issues/649#issuecomment-346997655
         # @todo: Either wait until redis-py supports `nx` option
-        #           or build redis-py wrapper module.
+        #  or build redis-py wrapper module.
         # ret_value = storage_engine.zadd(storage_namespace, sortedset_score,
         #                                 pingback_entry)
         ret_value = storage_engine.execute_command('ZADD', storage_namespace, 'NX',
