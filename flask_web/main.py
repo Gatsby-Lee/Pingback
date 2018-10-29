@@ -41,6 +41,7 @@ def pingback():
     try:
         task_id = request.args['taskId']
     except Exception:
+        logging.warn('taskId param is NOT provided.')
         return ('[400, ["FAIL", "taskId param is required."]]', 400, RESPONSE_HEADER)
 
     post_id = '-1'
@@ -54,6 +55,7 @@ def pingback():
         b = '[200, ["OK", ["%s", "%s"]]]' % (task_id, post_id)
         return (b, 200, RESPONSE_HEADER)
     except IntegrityError:
+        logging.warn('Duplicated entry exists: taskId=%s, postId=%s', task_id, post_id)
         return ('[409, ["FAIL", "Duplicated Entry"]]', 409, RESPONSE_HEADER)
     except Exception as e:
         logging.error(e)
