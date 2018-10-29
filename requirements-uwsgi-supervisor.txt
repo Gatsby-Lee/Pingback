@@ -1,5 +1,6 @@
 Flask==1.0.2
 redis==2.10.6
-uWSGI==2.0.17
+uwsgi==2.0.17
 # from supervisor 4.x, python3 will be supported.
-supervisor==4.0.0.dev0
+git+https://github.com/Supervisor/supervisor
+pip>=18.1
