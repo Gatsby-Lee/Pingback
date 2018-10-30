@@ -1,10 +1,10 @@
 service: pingback
 env: flex
 runtime: python
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn -b :$PORT flask_web.main:app
 env_variables:
-  REDISHOST: 10.0.0.3
-  REDISPORT: 6379
+  REDIS_HOST:
+  REDIS_PORT: 6379
 # update with Redis instance network name
 network:
   name: default
