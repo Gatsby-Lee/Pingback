@@ -44,5 +44,15 @@ To monitor logs
   gcloud app logs tail -s pingback
 
 
+
+uWSGI stand-alone
+^^^^^^^^^^^^^^^^^
+
+
+
+Nginx + uWSGI
+^^^^^^^^^^^^^
+
+
 Environment Variables
 ---------------------
