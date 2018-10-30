@@ -3,3 +3,5 @@ redis==2.10.6
 # uwsgi need gcc complier
 uwsgi==2.0.17
 pip>=18.1
+# from supervisor 4.x, python3 will be supported.
+# git+https://github.com/Supervisor/supervisor
