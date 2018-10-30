@@ -22,17 +22,15 @@ REDIS_CLIENT = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB,
                                  password=REDIS_PASSWORD)
 
 RESPONSE_HEADER = {"content-type": "application/json; charset=utf-8"}
-
+HELLO_PINGBACK = '[200, "Hello Pingback Service."]'
 
 @app.route('/')
-def hello():
+def home():
     """Return a friendly HTTP greeting."""
-    return 'Pingback Service with Flask.'
+    return (HELLO_PINGBACK, 200, RESPONSE_HEADER)
 
 
-@app.route('/test')
-@app.route('/dfs-sv')
-@app.route('/dfs-serp')
+@app.route('/pingback')
 def pingback():
     """Responds to any HTTP request.
     @note possible request
